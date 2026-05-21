@@ -4,16 +4,33 @@ description: GitHub Action for setting up Snapcraft
 runs:
   using: composite
   steps:
-    - run: sudo apt-get update -q
-    - run: sudo apt-get install -qy snapd
-    - run: sudo chown root:root /
-    - run: sudo systemctl enable --now snapd
-    - run: sudo systemctl restart snapd
-    - run: sudo snap install lxd
-    - run: sudo lxd init --auto
-    - run: sudo iptables -P FORWARD ACCEPT
-    - run: echo /snap/bin >> ${{ env.GITHUB_PATH }}
-    - run: sudo snap install --classic snapcraft
+    - name: install snapd
+      shell: bash
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -qy snapd
+
+    - name: setup snapd
+      shell: bash
+      run: |
+        sudo chown root:root /
+        sudo systemctl enable --now snapd
+        sudo systemctl restart snapd
+        echo /snap/bin >> ${{ env.GITHUB_PATH }}
+
+    - name: install lxd
+      shell: bash
+      run: sudo snap install lxd
+
+    - name: setup lxd
+      shell: bash
+      run: |
+        sudo lxd init --auto
+        sudo iptables -P FORWARD ACCEPT
+
+    - name: install snapcraft
+      shell: bash
+      run: sudo snap install --classic snapcraft
 
 branding:
   icon: upload-cloud
