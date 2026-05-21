@@ -16,7 +16,10 @@ runs:
         sudo chown root:root /
         sudo systemctl enable --now snapd
         sudo systemctl restart snapd
-        echo /snap/bin >> ${{ env.GITHUB_PATH }}
+
+    - name: add snap to path
+      shell: bash
+      run: echo /snap/bin >> $GITHUB_PATH
 
     - name: install lxd
       shell: bash
