@@ -1,24 +1,19 @@
 name: Snapcraft Action
-author: Samuel Meuli
 description: GitHub Action for setting up Snapcraft
 
-inputs:
-  channel:
-    description: The channel to install Snapcraft from
-    required: false
-    default: stable
-  skip_install:
-    description: Skip installation (login only)
-    required: false
-  use_lxd:
-    description: Whether to install and configure lxd
-    required: false
-    # tag: deprecate_use_lxd
-    deprecationMessage: automatic on ubuntu-20.04 or later
-
 runs:
-  using: node24
-  main: ./index.js
+  using: composite
+  steps:
+    - run: sudo apt-get update -q
+    - run: sudo apt-get install -qy snapd
+    - run: sudo chown root:root /
+    - run: sudo systemctl enable --now snapd
+    - run: sudo systemctl restart snapd
+    - run: sudo snap install lxd
+    - run: sudo lxd init --auto
+    - run: sudo iptables -P FORWARD ACCEPT
+    - run: echo /snap/bin >> ${{ env.GITHUB_PATH }}
+    - run: sudo snap install --classic snapcraft
 
 branding:
   icon: upload-cloud
